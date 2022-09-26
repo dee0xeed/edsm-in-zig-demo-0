@@ -83,6 +83,7 @@ pub const StageMachine = struct {
     pub fn onHeap(a: Allocator, md: *MessageDispatcher, name: []const u8) !*StageMachine {
         var sm = try a.create(StageMachine);
         sm.name = name;
+        sm.is_running = false;
         sm.md = md;
         sm.stages = StageList.init(a);
         sm.timers = EventSourceList.init(a);
