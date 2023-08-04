@@ -55,7 +55,7 @@ pub const Stage = struct {
     },
 
     pub fn setReflex(self: *Stage, esk: EventSourceKind, seqn: u4, refl: Reflex) void {
-        const row: u8 = @enumToInt(esk);
+        const row: u8 = @intFromEnum(esk);
         const col: u8 = seqn;
         self.reflexes[row][col] = refl;
     }
@@ -102,7 +102,7 @@ pub const StageMachine = struct {
         tm.id = try EventSource.getTimerId();
         tm.kind = EventSourceKind.tm;
         tm.owner = self;
-        tm.seqn = @intCast(u4, self.timers.items.len) - 1;
+        tm.seqn = @intCast(self.timers.items.len - 1);
         tm.readData = EventSource.readTimerData;
     }
 
@@ -111,13 +111,13 @@ pub const StageMachine = struct {
         sg.id = try EventSource.getSignalId(signo);
         sg.kind = EventSourceKind.sg;
         sg.owner = self;
-        sg.seqn = @intCast(u4, self.signals.items.len) - 1;
+        sg.seqn = @intCast(self.signals.items.len - 1);
         sg.readData = EventSource.readSignalData;
     }
 
     /// state machine engine
     pub fn reactTo(self: *StageMachine, msg: Message) void {
-        const row = @enumToInt(msg.esk);
+        const row: u8 = @intFromEnum(msg.esk);
         const col = msg.sqn;
         const current_stage = self.current_stage;
         if (current_stage.reflexes[row][col]) |refl| {

@@ -29,7 +29,7 @@ const TestMachine = struct {
     fn onHeap(a: Allocator, md: *MessageDispatcher) !*StageMachine {
         var sm = try StageMachine.onHeap(a, md, "TEST-EDSM");
         sm.data = try a.create(PrivateData);
-        var pd: *PrivateData = @ptrCast(*PrivateData, @alignCast(@alignOf(*PrivateData), sm.data));
+        var pd: *PrivateData = @ptrCast(@alignCast(sm.data));
         pd.ticks = 0;
 
         _ = try sm.addStage(Stage{.name = "INIT", .enter = &initEnter, .leave = null});
@@ -60,8 +60,10 @@ const TestMachine = struct {
     }
 
     fn workT0(me: *StageMachine, src: ?*StageMachine, data: ?*anyopaque) void {
-        var tm = @ptrCast(*EventSource, @alignCast(@alignOf(*EventSource), data));
-        var pd = @ptrCast(*PrivateData, @alignCast(@alignOf(*PrivateData), me.data));
+
+        var tm: *EventSource = @ptrCast(@alignCast(data));
+        var pd: *PrivateData = @ptrCast(@alignCast(me.data));
+
         _ = src;
         pd.ticks += 1;
         print("tick #{}\n", .{pd.ticks});
@@ -69,7 +71,7 @@ const TestMachine = struct {
     }
 
     fn workS0(me: *StageMachine, src: ?*StageMachine, data: ?*anyopaque) void {
-        var pd = @ptrCast(*PrivateData, @alignCast(@alignOf(*PrivateData), me.data));
+        var pd: *PrivateData = @ptrCast(@alignCast(me.data));
         _ = src;
         _ = data;
         print("got SIGINT after {} ticks\n", .{pd.ticks});
